@@ -16,15 +16,18 @@ type BufferService interface {
 	Rune(pos int) (rune, error)
 	Insert(pos int, r rune) error
 	Delete(pos int) (rune, error)
+	Set(rs []rune)
+	Clear()
 	Length() int
 }
 
-type BufferController interface {
+type BufferPresenter interface {
+	Area(line, width, height int) [][]rune
 	Insert(pos int, r rune)
 	Delete(pos int) rune
 }
 
 type BufferView interface {
-	Draw() error
-	Handle(termbox.Event) error
+	Draw()
+	Handle(event termbox.Event)
 }
