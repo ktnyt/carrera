@@ -1,9 +1,5 @@
 package carrera
 
-import (
-	"unicode/utf8"
-)
-
 func NewBufferService(buffer Buffer) BufferService {
 	return bufferService{ptr: &bufferServiceStorage{buffer: buffer}}
 }
@@ -16,30 +12,20 @@ type bufferService struct {
 	ptr *bufferServiceStorage
 }
 
-func (s bufferService) Rune(pos int) (rune, error) {
-	if pos > len(s.ptr.buffer) {
-		return utf8.RuneError, NewOutOfRangeError(pos)
-	}
-	return s.ptr.buffer[pos], nil
+func (s bufferService) Rune(pos int) Rune {
+	return Rune{Value: s.ptr.buffer[pos], Color: White}
 }
 
-func (s bufferService) Insert(pos int, r rune) error {
-	if pos > len(s.ptr.buffer) {
-		return NewOutOfRangeError(pos)
-	}
+func (s bufferService) Insert(pos int, r rune) {
 	s.ptr.buffer = append(s.ptr.buffer, 0)
 	copy(s.ptr.buffer[pos+1:], s.ptr.buffer[pos:])
 	s.ptr.buffer[pos] = r
-	return nil
 }
 
-func (s bufferService) Delete(pos int) (rune, error) {
-	if pos > len(s.ptr.buffer) {
-		return utf8.RuneError, NewOutOfRangeError(pos)
-	}
+func (s bufferService) Delete(pos int) rune {
 	r := s.ptr.buffer[pos]
 	s.ptr.buffer = append(s.ptr.buffer[:pos], s.ptr.buffer[pos+1:]...)
-	return r, nil
+	return r
 }
 
 func (s bufferService) Set(rs []rune) {

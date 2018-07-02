@@ -1,8 +1,6 @@
 package carrera
 
 import (
-	"log"
-
 	runewidth "github.com/mattn/go-runewidth"
 )
 
@@ -14,8 +12,8 @@ func NewBufferPresenter(service BufferService) BufferPresenter {
 	return bufferPresenter{service: service}
 }
 
-func (p bufferPresenter) Area(line, width, height int) [][]rune {
-	area := make([][]rune, 0)
+func (p bufferPresenter) Area(line, width, height int) [][]Rune {
+	area := make([][]Rune, 0)
 	pos := 0
 
 	for line > 0 {
@@ -23,51 +21,43 @@ func (p bufferPresenter) Area(line, width, height int) [][]rune {
 			return area
 		}
 
-		r, err := p.service.Rune(pos)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if r == '\n' {
+		if p.service.Rune(pos).Value == '\n' {
 			line--
 		}
 
 		pos++
 	}
 
-	area = append(area, make([]rune, 0))
+	area = append(area, make([]Rune, 0))
 
 	for pos < p.service.Length() && line < height {
-		r, err := p.service.Rune(pos)
-		if err != nil {
-			log.Fatal(err)
-		}
+		r := p.service.Rune(pos)
 
-		if r == '\n' {
-			area = append(area, make([]rune, 0))
+		if r.Value == '\n' {
+			area = append(area, make([]Rune, 0))
 			line++
 		} else {
 			linewidth := 0
 
-			if r == '\t' {
+			if r.Value == '\t' {
 				linewidth += tabwidth
 			} else {
-				linewidth += runewidth.RuneWidth(r)
+				linewidth += runewidth.RuneWidth(r.Value)
 			}
 
 			for _, r := range area[len(area)-1] {
-				linewidth += runewidth.RuneWidth(r)
+				linewidth += runewidth.RuneWidth(r.Value)
 			}
 
 			if linewidth >= width-1 {
-				area[len(area)-1] = append(area[len(area)-1], '\\')
-				area = append(area, make([]rune, 0))
+				area[len(area)-1] = append(area[len(area)-1], NewRune('\\', Black))
+				area = append(area, make([]Rune, 0))
 				line++
 			}
 
-			if r == '\t' {
+			if r.Value == '\t' {
 				for i := 0; i < tabwidth; i++ {
-					area[len(area)-1] = append(area[len(area)-1], ' ')
+					area[len(area)-1] = append(area[len(area)-1], NewRune(' ', White))
 				}
 			} else {
 				area[len(area)-1] = append(area[len(area)-1], r)
@@ -78,23 +68,16 @@ func (p bufferPresenter) Area(line, width, height int) [][]rune {
 	}
 
 	for len(area) < height {
-		area = append(area, []rune{'~'})
+		area = append(area, []Rune{NewRune('~', Black)})
 	}
 
 	return area
 }
 
 func (p bufferPresenter) Insert(pos int, r rune) {
-	if err := p.service.Insert(pos, r); err != nil {
-		log.Fatal(err)
-	}
+	p.service.Insert(pos, r)
 }
 
 func (p bufferPresenter) Delete(pos int) rune {
-	r, err := p.service.Delete(pos)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return r
+	return p.service.Delete(pos)
 }

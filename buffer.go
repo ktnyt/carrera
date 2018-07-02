@@ -13,16 +13,16 @@ func NewBufferWithCapacity(c int) Buffer {
 }
 
 type BufferService interface {
-	Rune(pos int) (rune, error)
-	Insert(pos int, r rune) error
-	Delete(pos int) (rune, error)
+	Rune(pos int) Rune
+	Insert(pos int, r rune)
+	Delete(pos int) rune
 	Set(rs []rune)
 	Clear()
 	Length() int
 }
 
 type BufferPresenter interface {
-	Area(line, width, height int) [][]rune
+	Area(line, width, height int) [][]Rune
 	Insert(pos int, r rune)
 	Delete(pos int) rune
 }
