@@ -12,8 +12,8 @@ func NewBufferPresenter(service BufferService) BufferPresenter {
 	return bufferPresenter{service: service}
 }
 
-func (p bufferPresenter) Area(line, width, height int) [][]Rune {
-	area := make([][]Rune, 0)
+func (p bufferPresenter) Area(line, width, height int) [][]Cell {
+	area := make([][]Cell, 0)
 	pos := 0
 
 	for line > 0 {
@@ -21,46 +21,54 @@ func (p bufferPresenter) Area(line, width, height int) [][]Rune {
 			return area
 		}
 
-		if p.service.Rune(pos).Value == '\n' {
+		if p.service.Cell(pos).Ch == '\n' {
 			line--
 		}
 
 		pos++
 	}
 
-	area = append(area, make([]Rune, 0))
+	area = append(area, make([]Cell, 0))
 
 	for pos < p.service.Length() && line < height {
-		r := p.service.Rune(pos)
+		c := p.service.Cell(pos)
 
-		if r.Value == '\n' {
-			area = append(area, make([]Rune, 0))
+		if c.Ch == '\n' {
+			area = append(area, make([]Cell, 0))
 			line++
 		} else {
 			linewidth := 0
 
-			if r.Value == '\t' {
+			if c.Ch == '\t' {
 				linewidth += tabwidth
 			} else {
-				linewidth += runewidth.RuneWidth(r.Value)
+				linewidth += runewidth.RuneWidth(c.Ch)
 			}
 
-			for _, r := range area[len(area)-1] {
-				linewidth += runewidth.RuneWidth(r.Value)
+			for _, c := range area[len(area)-1] {
+				linewidth += runewidth.RuneWidth(c.Ch)
 			}
 
 			if linewidth >= width-1 {
-				area[len(area)-1] = append(area[len(area)-1], NewRune('\\', Black))
-				area = append(area, make([]Rune, 0))
+				area[len(area)-1] = append(area[len(area)-1], Cell{
+					Ch: '\\',
+					Fg: Black,
+					Bg: Default,
+				})
+				area = append(area, make([]Cell, 0))
 				line++
 			}
 
-			if r.Value == '\t' {
+			if c.Ch == '\t' {
 				for i := 0; i < tabwidth; i++ {
-					area[len(area)-1] = append(area[len(area)-1], NewRune(' ', White))
+					area[len(area)-1] = append(area[len(area)-1], Cell{
+						Ch: ' ',
+						Fg: White,
+						Bg: Default,
+					})
 				}
 			} else {
-				area[len(area)-1] = append(area[len(area)-1], r)
+				area[len(area)-1] = append(area[len(area)-1], c)
 			}
 		}
 
@@ -68,7 +76,11 @@ func (p bufferPresenter) Area(line, width, height int) [][]Rune {
 	}
 
 	for len(area) < height {
-		area = append(area, []Rune{NewRune('~', Black)})
+		area = append(area, []Cell{Cell{
+			Ch: '~',
+			Fg: Black,
+			Bg: Default,
+		}})
 	}
 
 	return area

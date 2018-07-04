@@ -18,8 +18,8 @@ func NewBufferView(presenter BufferPresenter, width, height int) BufferView {
 func (v bufferView) Draw() {
 	area := v.presenter.Area(0, v.width, v.height)
 	for y, line := range area {
-		for x, r := range line {
-			termbox.SetCell(x, y, r.Value, termbox.Attribute(r.Color), termbox.ColorDefault)
+		for x, c := range line {
+			SetCell(x, y, c)
 		}
 	}
 }
