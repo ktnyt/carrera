@@ -1,5 +1,9 @@
 package carrera
 
-var (
-	tabwidth = 2
-)
+type Config struct {
+	TabWidth int
+}
+
+var DefaultConfig = &Config{
+	TabWidth: 2,
+}

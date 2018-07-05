@@ -1,7 +1,7 @@
-package carrera
+package buffer
 
 import (
-	termbox "github.com/nsf/termbox-go"
+	. "github.com/ktnyt/carrera"
 )
 
 type bufferView struct {
@@ -24,6 +24,6 @@ func (v bufferView) Draw() {
 	}
 }
 
-func (v bufferView) Handle(event termbox.Event) {
+func (v bufferView) Handle(event Event) {
 	return
 }

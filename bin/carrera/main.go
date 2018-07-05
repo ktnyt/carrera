@@ -1,33 +1,32 @@
 package main
 
 import (
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
-	"unicode/utf8"
 
+	"github.com/alecthomas/chroma/lexers"
 	"github.com/ktnyt/carrera"
-	termbox "github.com/nsf/termbox-go"
+	carreraBuffer "github.com/ktnyt/carrera/buffer"
+	termbox "github.com/ktnyt/termbox-go"
 )
 
-func newBufferServiceFromFile(file io.Reader) carrera.BufferService {
-	p, err := ioutil.ReadAll(file)
+func openFile(filename string) carrera.BufferService {
+	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	buffer := carrera.NewBufferWithCapacity(len(p))
-	service := carrera.NewBufferService(buffer)
-
-	i := 0
-	pos := 0
-	for i < len(p) {
-		r, size := utf8.DecodeRune(p[i:])
-		service.Insert(pos, r)
-		i += size
-		pos++
+	p, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatal(err)
 	}
+	file.Close()
+
+	lexer := lexers.Match(filename)
+	syntax := carrera.NewSyntax(lexer)
+	buffer := carrera.Buffer([]rune(string(p)))
+	service := carreraBuffer.NewBufferService(buffer, syntax.Highlight)
 
 	return service
 }
@@ -36,19 +35,14 @@ func run(filename string) error {
 	var err error
 	run := true
 
-	file, err := os.Open(filename)
-	if err != nil {
-		return err
-	}
-
-	service := newBufferServiceFromFile(file)
-	file.Close()
+	service := openFile(filename)
 
 	termbox.Init()
+	termbox.SetOutputMode(termbox.OutputXterm)
 
-	presenter := carrera.NewBufferPresenter(service)
+	presenter := carreraBuffer.NewBufferPresenter(service)
 	width, height := termbox.Size()
-	view := carrera.NewBufferView(presenter, width, height)
+	view := carreraBuffer.NewBufferView(presenter, width, height)
 
 	for run {
 		view.Draw()

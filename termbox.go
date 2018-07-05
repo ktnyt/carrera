@@ -1,6 +1,8 @@
 package carrera
 
-import termbox "github.com/nsf/termbox-go"
+import termbox "github.com/ktnyt/termbox-go"
+
+type Event termbox.Event
 
 type Color termbox.Attribute
 
@@ -15,14 +17,14 @@ var (
 	Cyan    = Color(termbox.ColorCyan)
 	White   = Color(termbox.ColorWhite)
 
-	BrightBlack   = Color(termbox.AttrBold | termbox.ColorBlack)
-	BrightRed     = Color(termbox.AttrBold | termbox.ColorRed)
-	BrightGreen   = Color(termbox.AttrBold | termbox.ColorGreen)
-	BrightYellow  = Color(termbox.AttrBold | termbox.ColorYellow)
-	BrightBlue    = Color(termbox.AttrBold | termbox.ColorBlue)
-	BrightMagenta = Color(termbox.AttrBold | termbox.ColorMagenta)
-	BrightCyan    = Color(termbox.AttrBold | termbox.ColorCyan)
-	BrightWhite   = Color(termbox.AttrBold | termbox.ColorWhite)
+	BrightBlack   = Color(termbox.AttrBright | termbox.ColorBlack)
+	BrightRed     = Color(termbox.AttrBright | termbox.ColorRed)
+	BrightGreen   = Color(termbox.AttrBright | termbox.ColorGreen)
+	BrightYellow  = Color(termbox.AttrBright | termbox.ColorYellow)
+	BrightBlue    = Color(termbox.AttrBright | termbox.ColorBlue)
+	BrightMagenta = Color(termbox.AttrBright | termbox.ColorMagenta)
+	BrightCyan    = Color(termbox.AttrBright | termbox.ColorCyan)
+	BrightWhite   = Color(termbox.AttrBright | termbox.ColorWhite)
 )
 
 type Cell struct {

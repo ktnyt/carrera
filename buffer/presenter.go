@@ -1,12 +1,15 @@
-package carrera
+package buffer
 
 import (
+	. "github.com/ktnyt/carrera"
 	runewidth "github.com/mattn/go-runewidth"
 )
 
 type bufferPresenter struct {
 	service BufferService
 }
+
+var tabwidth = DefaultConfig.TabWidth
 
 func NewBufferPresenter(service BufferService) BufferPresenter {
 	return bufferPresenter{service: service}

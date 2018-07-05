@@ -1,7 +1,5 @@
 package carrera
 
-import termbox "github.com/nsf/termbox-go"
-
 type Buffer []rune
 
 func NewBuffer() Buffer {
@@ -29,5 +27,5 @@ type BufferPresenter interface {
 
 type BufferView interface {
 	Draw()
-	Handle(event termbox.Event)
+	Handle(event Event)
 }
